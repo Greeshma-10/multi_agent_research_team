@@ -55,7 +55,7 @@ def summarizer_agent(papers):
     summaries = []
     model = genai.GenerativeModel("gemini-1.5-flash")
     for paper in papers:
-        prompt = f"Summarize the following abstract in 3-4 sentences:\n{paper['abstract']}"
+        prompt = f"Summarize the following abstract in 7-8 sentences and display in points:\n{paper['abstract']}"
         try:
             response = model.generate_content(
                 prompt,
@@ -74,3 +74,6 @@ def summarizer_agent(papers):
 summaries = summarizer_agent(papers)
 for s in summaries:
     print(f"{s['title']}\nSummary: {s['summary']}\n")
+    
+    
+    
