@@ -55,7 +55,21 @@ def summarizer_agent(papers):
     summaries = []
     model = genai.GenerativeModel("gemini-1.5-flash")
     for paper in papers:
-        prompt = f"Summarize the following abstract in 7-8 sentences and display in points:\n{paper['abstract']}"
+        prompt = f"""
+Summarize the following abstract in a structured research format. 
+Organize the summary under these sections:
+1. Background
+2. Objective
+3. Methods
+4. Results
+5. Conclusion
+
+Ensure each section is concise (1–2 sentences) and captures the essence of the abstract clearly.
+
+Abstract:
+{paper['abstract']}
+"""
+
         try:
             response = model.generate_content(
                 prompt,
@@ -77,3 +91,40 @@ for s in summaries:
     
     
     
+def writer_agent(summaries, topic):
+    """
+    Writer Agent: compiles all paper summaries into a structured research-style report.
+    
+    Args:
+        summaries (list): list of dicts with 'title', 'summary', 'url'
+        topic (str): the research topic
+    
+    Returns:
+        str: formatted research report
+    """
+    report_sections = []
+    for s in summaries:
+        section = f"### {s['title']}\n{s['summary']}\n[Read more]({s['url']})\n"
+        report_sections.append(section)
+
+    report = f"""
+# Research Report on {topic}
+
+## Introduction
+This report compiles and summarizes recent research papers related to *{topic}*.
+The following sections provide concise summaries of key papers, highlighting their contributions.
+
+## Paper Summaries
+{chr(10).join(report_sections)}
+
+## Conclusion
+This report consolidates current findings from multiple sources.
+It may serve as a foundation for deeper exploration, critical analysis, and potential project directions.
+"""
+    return report
+
+topic = query  # you already have the search topic
+report = writer_agent(summaries, topic)
+
+# Print report
+print(report)
