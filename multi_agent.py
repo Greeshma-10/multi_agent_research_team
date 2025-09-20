@@ -37,13 +37,6 @@ def researcher_agent(query, max_results=5):
     
     return papers
 
-# Test
-query = "quantum computing drug discovery"
-papers = researcher_agent(query)
-for i, paper in enumerate(papers):
-    print(f"{i+1}. {paper['title']}")
-
-
 # Load .env
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -84,10 +77,7 @@ Abstract:
             print(f"Error summarizing {paper['title']}: {e}")
             summaries.append({"title": paper['title'], "summary": "Error summarizing paper.", "url": paper['url']})
     return summaries
-# Test
-summaries = summarizer_agent(papers)
-for s in summaries:
-    print(f"{s['title']}\nSummary: {s['summary']}\n")
+
     
     
     
@@ -123,11 +113,7 @@ It may serve as a foundation for deeper exploration, critical analysis, and pote
 """
     return report
 
-topic = query  # you already have the search topic
-report = writer_agent(summaries, topic)
 
-# Print report
-print(report)
 
 def critic_agent(summaries):
     """
@@ -160,11 +146,3 @@ Identify:
             critiques.append({"title": s['title'], "critique": f"Error generating critique: {e}", "url": s['url']})
     
     return critiques
-# Call critic agent
-critiques = critic_agent(summaries)
-
-# Print results for visibility
-for c in critiques:
-    print(f"--- {c['title']} ---")
-    print(c['critique'])
-    print(f"[Read more]({c['url']})\n")
