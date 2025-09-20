@@ -128,3 +128,43 @@ report = writer_agent(summaries, topic)
 
 # Print report
 print(report)
+
+def critic_agent(summaries):
+    """
+    Critic Agent: evaluates each paper summary for limitations, assumptions, or open challenges.
+    """
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    critiques = []
+    
+    for s in summaries:
+        prompt = f"""
+You are a critical reviewer. Analyze the following summary of a research paper.
+
+Paper Title: {s['title']}
+Summary: {s['summary']}
+
+Identify:
+1. Potential limitations or weaknesses
+2. Assumptions made
+3. Gaps or unanswered questions
+4. Possible improvements or future directions
+"""
+        try:
+            response = model.generate_content(
+                prompt,
+                generation_config={"temperature": 0.6, "max_output_tokens": 200}
+            )
+            critique_text = response.text.strip()
+            critiques.append({"title": s['title'], "critique": critique_text, "url": s['url']})
+        except Exception as e:
+            critiques.append({"title": s['title'], "critique": f"Error generating critique: {e}", "url": s['url']})
+    
+    return critiques
+# Call critic agent
+critiques = critic_agent(summaries)
+
+# Print results for visibility
+for c in critiques:
+    print(f"--- {c['title']} ---")
+    print(c['critique'])
+    print(f"[Read more]({c['url']})\n")
